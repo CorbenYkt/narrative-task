@@ -13,7 +13,6 @@ const ImageList: React.FC = () => {
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
 
-
     const prevImage = () => {
         setImageLoading(true);
         setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -46,6 +45,22 @@ const ImageList: React.FC = () => {
     }, [showContextMenu]);
 
 
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'ArrowLeft') {
+                prevImage();
+            } else if (event.key === 'ArrowRight') {
+                nextImage();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [images.length]);
+
 
     if (isLoading)
         return (
@@ -66,10 +81,9 @@ const ImageList: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center justify-center h-full w-full bg-[#E5E5E5] relative">
-            {/* Контейнер для изображения с обработчиком правого клика */}
             <div
                 className="relative max-w-full h-full flex items-center justify-center"
-                onContextMenu={handleContextMenu} // Обработчик контекстного меню
+                onContextMenu={handleContextMenu}
             >
                 {imageLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-[#E5E5E5]">
@@ -89,11 +103,10 @@ const ImageList: React.FC = () => {
                         loading="lazy"
                     />
 
-                    {/* Маски для лиц отображаются только после загрузки изображения */}
                     {!imageLoading && faces?.data.map((face) => (
                         <div
                             key={face.id}
-                            className="absolute border-2 border-white"
+                            className="absolute border-2 border-white hover:border-red-500"
                             style={{
                                 left: `${face.xmin * 100}%`,
                                 top: `${face.ymin * 100}%`,
