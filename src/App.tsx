@@ -1,12 +1,14 @@
-import './App.css'
+import React from 'react';
+import ImageList from './components/ImageList';
 
-function App() {
-
+const App: React.FC = () => {
   return (
-    <>
-      <p className='text-2xl'>Here is a first commit)</p>
-    </>
-  )
-}
+    <main>
+      <div className="min-h-screen bg-white flex justify-center items-center">
+        <ImageList />
+      </div>
+    </main>
+  );
+};
 
-export default App
+export default App;
