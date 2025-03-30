@@ -31,7 +31,7 @@ const ImageList: React.FC = () => {
         setShowContextMenu(true);
     };
 
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = () => {
         if (showContextMenu) {
             setShowContextMenu(false);
         }
@@ -143,13 +143,13 @@ const ImageList: React.FC = () => {
                     }}
                 >
                     <ul className="list-none p-2 m-0 rounded">
-                        <li className="p-2 cursor-pointer hover:bg-gray-200">
+                        <li className="p-2 cursor-pointer hover:bg-black hover:text-white ">
                             Dummy Item
                         </li>
-                        <li className="p-2 cursor-pointer hover:bg-gray-200 border-b border-gray-300">
+                        <li className="p-2 cursor-pointer hover:bg-black hover:text-white border-b border-gray-300">
                             This Does Nothing
                         </li>
-                        <li className="p-2 cursor-pointer hover:bg-gray-200 border-b border-gray-300">
+                        <li className="p-2 cursor-pointer hover:bg-black hover:text-white border-b border-gray-300">
                             Fake News
                         </li>
                         <li className="p-2 cursor-pointer hover:bg-red-500 hover:text-white">
