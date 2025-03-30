@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGetImagesQuery, useGetFacesQuery } from '../services/imagesapi';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -9,8 +9,10 @@ const ImageList: React.FC = () => {
     const images = data?.data || [];
     const currentImage = images[currentIndex] || null;
     const { data: faces } = useGetFacesQuery(currentImage?.id ?? '');
-
     const imageRef = useRef<HTMLImageElement | null>(null);
+    const [showContextMenu, setShowContextMenu] = useState(false);
+    const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+
 
     const prevImage = () => {
         setImageLoading(true);
@@ -21,6 +23,29 @@ const ImageList: React.FC = () => {
         setImageLoading(true);
         setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     };
+
+    const handleContextMenu = (event: React.MouseEvent) => {
+        event.preventDefault();
+        const x = event.clientX;
+        const y = event.clientY;
+        setContextMenuPosition({ x, y });
+        setShowContextMenu(true);
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+        if (showContextMenu) {
+            setShowContextMenu(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [showContextMenu]);
+
+
 
     if (isLoading)
         return (
@@ -41,7 +66,11 @@ const ImageList: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center justify-center h-full w-full bg-[#E5E5E5] relative">
-            <div className="relative max-w-full h-full flex items-center justify-center">
+            {/* Контейнер для изображения с обработчиком правого клика */}
+            <div
+                className="relative max-w-full h-full flex items-center justify-center"
+                onContextMenu={handleContextMenu} // Обработчик контекстного меню
+            >
                 {imageLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-[#E5E5E5]">
                         <div className="text-center text-lg">
@@ -91,6 +120,31 @@ const ImageList: React.FC = () => {
                 />
                 <p className="text-lg select-none">{currentImage.filename}</p>
             </div>
+
+            {showContextMenu && (
+                <div
+                    className="absolute bg-white border border-gray-300 shadow-md rounded text-lg"
+                    style={{
+                        top: contextMenuPosition.y,
+                        left: contextMenuPosition.x,
+                    }}
+                >
+                    <ul className="list-none p-2 m-0 rounded">
+                        <li className="p-2 cursor-pointer hover:bg-gray-200">
+                            Dummy Item
+                        </li>
+                        <li className="p-2 cursor-pointer hover:bg-gray-200 border-b border-gray-300">
+                            This Does Nothing
+                        </li>
+                        <li className="p-2 cursor-pointer hover:bg-gray-200 border-b border-gray-300">
+                            Fake News
+                        </li>
+                        <li className="p-2 cursor-pointer hover:bg-red-500 hover:text-white">
+                            Delete Frame
+                        </li>
+                    </ul>
+                </div>
+            )}
         </div>
     );
 };
